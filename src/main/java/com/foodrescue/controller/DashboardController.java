@@ -1,5 +1,6 @@
 package com.foodrescue.controller;
 
+import com.foodrescue.dto.DashboardResponseDTO;
 import com.foodrescue.dto.DashboardStatsDTO;
 import com.foodrescue.entity.DonationStatus;
 import com.foodrescue.repository.FoodDonationRepository;
@@ -32,6 +33,27 @@ public class DashboardController {
                 totalDonations,
                 availableFood,
                 totalUsers
+        );
+    }
+
+    @GetMapping("/overview")
+    public DashboardResponseDTO getOverview() {
+
+        long totalDonations = donationRepository.count();
+
+        long availableFood =
+                donationRepository.countByStatus(DonationStatus.AVAILABLE);
+
+        long totalUsers = userRepository.count();
+
+        return new DashboardResponseDTO(
+                "Likith",
+                totalDonations,
+                availableFood,
+                totalUsers,
+                1250,
+                3,
+                21
         );
     }
 }
