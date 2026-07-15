@@ -4,9 +4,15 @@ import com.foodrescue.dto.LoginRequest;
 import com.foodrescue.dto.RegisterRequest;
 import com.foodrescue.entity.User;
 import com.foodrescue.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -14,46 +20,73 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(
-            @RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
 
+        // Check if email already exists
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest()
-                    .body("Email already exists");
+            Map<String, String> response = new HashMap<>();
+            response.put("success", "false");
+            response.put("message", "Email already exists");
+            return ResponseEntity.badRequest().body(response);
         }
 
+        // Check if mobile number already exists
+        if (userRepository.findByMobileNumber(request.getMobileNumber()).isPresent()) {
+            Map<String, String> response = new HashMap<>();
+            response.put("success", "false");
+            response.put("message", "Mobile number already exists");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        // Create new user with hashed password
         User user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .mobileNumber(request.getMobileNumber())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .build();
 
         userRepository.save(user);
 
-        return ResponseEntity.ok("Registration successful");
+        Map<String, String> response = new HashMap<>();
+        response.put("success", "true");
+        response.put("message", "Registration successful. Please login with your credentials.");
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(
-            @RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
 
+        // Find user by email
         User user = userRepository
                 .findByEmail(request.getEmail())
                 .orElse(null);
 
+        // Check if user exists
         if (user == null) {
-            return ResponseEntity.badRequest()
-                    .body("User not found");
+            Map<String, String> response = new HashMap<>();
+            response.put("success", "false");
+            response.put("message", "Invalid email or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
-        if (!user.getPassword().equals(request.getPassword())) {
-            return ResponseEntity.badRequest()
-                    .body("Invalid password");
+        // Verify password using BCrypt
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            Map<String, String> response = new HashMap<>();
+            response.put("success", "false");
+            response.put("message", "Invalid email or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
-        return ResponseEntity.ok(user);
+        // Login successful
+        Map<String, String> response = new HashMap<>();
+        response.put("success", "true");
+        response.put("message", "Login successful");
+        response.put("userId", String.valueOf(user.getId()));
+        response.put("email", user.getEmail());
+        return ResponseEntity.ok(response);
     }
 }
