@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import com.foodrescue.security.JwtUtil;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -81,12 +82,15 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
-        // Login successful
+        // Login successful - generate JWT and return it along with user info
+        String token = JwtUtil.generateToken(user);
+
         Map<String, String> response = new HashMap<>();
         response.put("success", "true");
         response.put("message", "Login successful");
         response.put("userId", String.valueOf(user.getId()));
         response.put("email", user.getEmail());
+        response.put("token", token);
         return ResponseEntity.ok(response);
     }
 }
