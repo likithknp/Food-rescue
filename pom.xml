@@ -101,7 +101,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- mail dependency removed (not enabled by default) -->
+        <!-- Mail - required when NotificationService uses JavaMailSender -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
 
     </dependencies>
 
