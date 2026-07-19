@@ -101,6 +101,8 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- mail dependency removed (not enabled by default) -->
+
     </dependencies>
 
     <build>
@@ -118,6 +120,7 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
+                    <release>17</release>
 
                     <annotationProcessorPaths>
                         <path>

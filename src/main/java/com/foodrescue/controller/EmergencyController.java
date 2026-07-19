@@ -5,6 +5,7 @@ import com.foodrescue.repository.EmergencyRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class EmergencyController {
 
     @Autowired
     private EmergencyRequestRepository repository;
+
 
     @PostMapping
     public EmergencyRequest create(@RequestBody EmergencyRequest request) {
