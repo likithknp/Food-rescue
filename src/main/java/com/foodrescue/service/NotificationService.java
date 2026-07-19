@@ -33,23 +33,47 @@ public class NotificationService {
                 List<User> users = userRepository.findAll();
                 int sent = 0;
                 for (User u : users) {
-                    if (u.getEmail() == null || u.getEmail().isBlank()) continue;
+
+                    if (u.getEmail() == null || u.getEmail().isBlank()) {
+                        continue;
+                    }
+
+                    System.out.println("Preparing email for: " + u.getEmail());
+
                     try {
                         SimpleMailMessage msg = new SimpleMailMessage();
+
                         msg.setTo(u.getEmail());
-                        msg.setFrom("noreply@foodrescue.example");
-                        msg.setSubject("Emergency request near you");
+                        msg.setFrom("foodrescue.notifications@gmail.com");
+                        msg.setSubject("Emergency Request Near You");
+
                         StringBuilder body = new StringBuilder();
-                        body.append("An emergency request has been posted:\n\n");
-                        if (request.getReason() != null) body.append("Reason: ").append(request.getReason()).append("\n");
-                        if (request.getContactNumber() != null) body.append("Contact: ").append(request.getContactNumber()).append("\n");
-                        if (request.getNotes() != null) body.append("Notes: ").append(request.getNotes()).append("\n");
-                        body.append("\nPlease open the Food Rescue app to respond.");
+                        body.append("An emergency request has been posted.\n\n");
+
+                        if (request.getReason() != null) {
+                            body.append("Reason: ").append(request.getReason()).append("\n");
+                        }
+
+                        if (request.getContactNumber() != null) {
+                            body.append("Contact Number: ").append(request.getContactNumber()).append("\n");
+                        }
+
+                        if (request.getNotes() != null) {
+                            body.append("Notes: ").append(request.getNotes()).append("\n");
+                        }
+
+                        body.append("\nPlease open the Food Rescue application to respond.");
+
                         msg.setText(body.toString());
+
+                        System.out.println("Calling mailSender.send()...");
+
                         mailSender.send(msg);
-                        sent++;
+
+                        System.out.println("SUCCESS -> " + u.getEmail());
+
                     } catch (Exception ex) {
-                        System.err.println("[NotificationService] failed to send email to " + u.getEmail() + ": " + ex.getMessage());
+                        ex.printStackTrace();
                     }
                 }
                 System.out.println("[NotificationService] broadcast completed. Emails sent: " + sent);

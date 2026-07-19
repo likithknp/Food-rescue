@@ -29,12 +29,15 @@ public class EmergencyController {
         request.setStatus("ACTIVE");
 
         EmergencyRequest saved = repository.save(request);
-        try {
-            if (notificationService != null) {
-                notificationService.broadcastEmergency(saved);
-            }
-        } catch (Exception ex) {
-            System.err.println("[EmergencyController] Notification failed: " + ex.getMessage());
+
+        if (notificationService != null) {
+            new Thread(() -> {
+                try {
+                    notificationService.broadcastEmergency(saved);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
 
         return saved;
