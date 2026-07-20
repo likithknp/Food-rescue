@@ -90,9 +90,6 @@ public class AuthController {
         response.put("message", "Login successful");
         response.put("userId", String.valueOf(user.getId()));
         response.put("email", user.getEmail());
-        // Include full name and mobile number so front-end can display profile immediately
-        response.put("fullName", user.getFullName() != null ? user.getFullName() : "");
-        response.put("mobileNumber", user.getMobileNumber() != null ? user.getMobileNumber() : "");
         response.put("token", token);
         return ResponseEntity.ok(response);
     }
