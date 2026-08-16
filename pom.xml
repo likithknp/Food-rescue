@@ -5,8 +5,8 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.foodrescue</groupId>
-    <artifactId>food-waste-sharing-backend</artifactId>
+    <groupId>com.aaharSetu</groupId>
+    <artifactId>aahar-setu-backend</artifactId>
     <version>1.0.0</version>
 
     <parent>

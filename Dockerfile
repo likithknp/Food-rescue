@@ -8,4 +8,4 @@ RUN mvn clean package -DskipTests
 
 EXPOSE 8081
 
-CMD ["java","-jar","target/food-waste-sharing-backend-1.0.0.jar"]
+CMD ["java","-jar","target/aahar-setu-backend-1.0.0.jar"]
